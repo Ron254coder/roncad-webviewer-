@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RonCAD Combined Kotlin Code</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+        pre {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>RonCAD - Combined Kotlin Source Code</h1>
+    <pre>// Combined RonCAD App Source Code
+// Package: com.roncad
+
+// --- MainActivity.kt ---
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            DrawingScreen()
+        }
+    }
+}
+
+// --- DrawingScreen.kt ---
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun DrawingScreen() {
+    val shapes = remember { mutableStateListOf&lt;Shape&gt;() }
+    var selectedShape by remember { mutableStateOf(ShapeType.RECTANGLE) }
+    val context = LocalContext.current
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = { selectedShape = ShapeType.RECTANGLE }) { Text(&quot;Rectangle&quot;) }
+            Button(onClick = { selectedShape = ShapeType.CIRCLE }) { Text(&quot;Circle&quot;) }
+            Button(onClick = { selectedShape = ShapeType.LINE }) { Text(&quot;Line&quot;) }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        ShapeCanvas(shapes = shapes, selectedShape = selectedShape)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = { FileUtils.saveShapes(context, shapes) }) { Text(&quot;Save&quot;) }
+            Button(onClick = {
+                val loaded = FileUtils.loadShapes(context)
+                shapes.clear()
+                shapes.addAll(loaded)
+            }) { Text(&quot;Load&quot;) }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        ImageDisplay()
+        DesignerInfo()
+        CategorySelector()
+    }
+}
+
+// --- ShapeCanvas.kt ---
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
+
+@Composable
+fun ShapeCanvas(shapes: MutableList&lt;Shape&gt;, selectedShape: ShapeType) {
+    var startPoint by remember { mutableStateOf&lt;Offset?&gt;(null) }
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = { offset -&gt;
+                        startPoint = offset
+                        tryAwaitRelease()
+                        val endPoint = offset
+                        startPoint?.let { start -&gt;
+                            shapes.add(Shape.fromOffsets(start, endPoint, selectedShape))
+                        }
+                        startPoint = null
+                    }
+                )
+            }
+    ) {
+        shapes.forEach { drawShape(it) }
+    }
+}
+
+fun DrawScope.drawShape(shape: Shape) {
+    when (shape.type) {
+        ShapeType.RECTANGLE -&gt; drawRect(
+            color = Color.Blue,
+            topLeft = shape.start,
+            size = androidx.compose.ui.geometry.Size(
+                shape.end.x - shape.start.x,
+                shape.end.y - shape.start.y
+            )
+        )
+        ShapeType.CIRCLE -&gt; drawCircle(
+            color = Color.Red,
+            center = shape.start,
+            radius = shape.start.minus(shape.end).getDistance()
+        )
+        ShapeType.LINE -&gt; drawLine(
+            color = Color.Green,
+            start = shape.start,
+            end = shape.end,
+            strokeWidth = 5f
+        )
+    }
+}
+
+fun Offset.getDistance(): Float {
+    return kotlin.math.sqrt((x * x + y * y).toDouble()).toFloat()
+}
+
+// --- Shape.kt ---
+import androidx.compose.ui.geometry.Offset
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Shape(
+    val startX: Float,
+    val startY: Float,
+    val endX: Float,
+    val endY: Float,
+    val type: ShapeType
+) {
+    val start: Offset get() = Offset(startX, startY)
+    val end: Offset get() = Offset(endX, endY)
+
+    companion object {
+        fun fromOffsets(start: Offset, end: Offset, type: ShapeType): Shape {
+            return Shape(start.x, start.y, end.x, end.y, type)
+        }
+    }
+}
+
+// --- ShapeType.kt ---
+@Serializable
+enum class ShapeType {
+    RECTANGLE, CIRCLE, LINE
+}
+
+// --- FileUtils.kt ---
+import android.content.Context
+import android.util.Log
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
+
+object FileUtils {
+    private const val FILE_NAME = &quot;shapes.json&quot;
+
+    fun saveShapes(context: Context, shapes: List&lt;Shape&gt;) {
+        try {
+            val jsonString = Json.encodeToString(shapes)
+            File(context.filesDir, FILE_NAME).writeText(jsonString)
+        } catch (e: Exception) {
+            Log.e(&quot;FileUtils&quot;, &quot;Save error: ${e.message}&quot;)
+        }
+    }
+
+    fun loadShapes(context: Context): List&lt;Shape&gt; {
+        return try {
+            val file = File(context.filesDir, FILE_NAME)
+            if (file.exists()) Json.decodeFromString(file.readText()) else emptyList()
+        } catch (e: Exception) {
+            Log.e(&quot;FileUtils&quot;, &quot;Load error: ${e.message}&quot;)
+            emptyList()
+        }
+    }
+}</pre>
+</body>
+</html>
