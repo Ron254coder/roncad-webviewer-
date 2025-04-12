@@ -1,6 +1,6 @@
 # RonCAD
 
-**RonCAD** is an Android and iOS app for architectural and engineering works.It enables users to draw simple shapes (rectangles, circles, and lines), view samples designed from different designers.The user gets to follow their favorite designers inoder to look out for future updates.The user is able to enter the designers details, select design categories, and save/load their designs.In future we may offer job application from various employers.The employer will subscribe to the Ronpack monthly package @$..This will enable the employer to have vast options when it comes to hiring of engineers and architects for thier firms.In addition designers who upload designs will also subscribe to the Jengapack @$.. inorder for them to get thier spot and pay for marketing of thier products on our platform.Platform viewers will use this app for free but can donate or boost thier favorite designers with money through the Ron Social fund RNSF.There is also the RRpay for faster transaction and low cost between the disigner and the customer .Our app is the next big thing for engineering and architectural works.
+**RonCAD** is an Android and iOS app for architectural and engineering works.It enables users to draw simple shapes (rectangles, circles, and lines), view samples designed from different designers.The user gets to follow their favorite designers inoder to look out for future updates.The user is able to enter the designers details, select design categories, and save/load their designs.In future we may offer job application from various employers.The employer will subscribe to the Ronpack monthly package @$..This will enable the employer to have vast options when it comes to hiring of engineers and architects for thier firms.In addition designers who upload designs will also subscribe to the Jengapack @$.. inorder for them to get thier spot and pay for marketing of thier products on our platform.The Platform viewers will use this app for free but can donate thier favorite designers with money through the Ron creators fund RCF.There is also the RRpay for faster transaction at low cost between the designer and the customer .Our app is the next big thing for engineering and architectural works.
 
 ---
 
@@ -60,7 +60,7 @@ MIT License
 
 ---
 
-## Author
+## Author and Developer
 
 Designed and developed by (Ronald.O.Otieno].
 
