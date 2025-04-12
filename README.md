@@ -1,6 +1,6 @@
 # RonCAD
 
-**RonCAD** is an Android app for architectural and engineering design. It enables users to draw simple shapes (rectangles, circles, and lines), view a sample design image, enter designer details, select design categories, and save/load their designs.
+**RonCAD** is an Android app for architectural and engineering designs. It enables users to draw simple shapes (rectangles, circles, and lines), view a sample design image, enter designer details, select design categories, and save/load their designs.
 
 ---
 
@@ -8,7 +8,7 @@
 
 - Draw rectangles, circles, and lines
 - Save and load designs using internal storage (JSON)
-- Display architectural sample image
+- Display architectural sample images 
 - Input designer name and company
 - Choose from design categories (Residential, Commercial, etc.)
 
@@ -60,8 +60,7 @@ MIT License
 
 ## Author
 
-Designed and developed by [You].
+Designed and developed by (Ronald.O.Otieno].
 
 ---
 
-*This project was generated with help from ChatGPT.*
